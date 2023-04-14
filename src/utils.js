@@ -208,6 +208,7 @@ export function evalStorybookStorySnapshots({ waitFor }) {
 export function evalSetCurrentStory({ waitFor }, story) {
   return waitFor(() => (
     // get the correct channel depending on the storybook version
+    window.__STORYBOOK_ADDONS_CHANNEL__ ||
     window.__STORYBOOK_PREVIEW__?.channel ||
     window.__STORYBOOK_STORY_STORE__?._channel
   ), 5000).catch(() => Promise.reject(new Error(

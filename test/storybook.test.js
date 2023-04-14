@@ -11,6 +11,8 @@ describe('percy storybook', () => {
     'channel: { emit() {}, on: (a, c) => a === "storyRendered" && c() }' +
   ' }';
 
+  const FAKE_ADDON_CHANNEL = '{ emit() {} }';
+
   beforeAll(async () => {
     server = await createTestServer({
       default: () => [200, 'text/html', '<p>Not Storybook</p>']
@@ -107,6 +109,7 @@ describe('percy storybook', () => {
   it('errors when no snapshots are found', async () => {
     // fake storybook client api with no stories
     server.reply('/iframe.html', () => [200, 'text/html', [
+      `<script>__STORYBOOK_ADDONS_CHANNEL__ = ${FAKE_ADDON_CHANNEL}</script>`,
       `<script>__STORYBOOK_PREVIEW__ = ${FAKE_PREVIEW}</script>`,
       '<script>__STORYBOOK_STORY_STORE__ = { raw: () => [] }</script>'
     ].join('')]);
@@ -162,6 +165,7 @@ describe('percy storybook', () => {
     let storyDOM = [
       '<!DOCTYPE html><html><head></head><body>',
       '<p>This is a story. The html needs to be complete since it gets serialized</p>',
+      `<script>__STORYBOOK_ADDONS_CHANNEL__ = ${FAKE_ADDON_CHANNEL}</script>`,
       `<script>__STORYBOOK_PREVIEW__ = ${FAKE_PREVIEW}</script>`,
       '<script>__STORYBOOK_STORY_STORE__ = { raw: () => ' + JSON.stringify([
         { id: '1', kind: 'foo', name: 'bar' },
@@ -460,6 +464,7 @@ describe('percy storybook', () => {
         }
 
         return [200, 'text/html', [
+          `<script>__STORYBOOK_ADDONS_CHANNEL__ = ${FAKE_ADDON_CHANNEL}</script>`,
           `<script>__STORYBOOK_PREVIEW__ = ${FAKE_PREVIEW}</script>`,
           `<script>__STORYBOOK_STORY_STORE__ = { raw: () => ${JSON.stringify(stories)} }</script>`
         ].join('')];
